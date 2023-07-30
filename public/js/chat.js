@@ -47,22 +47,10 @@ locationButton.addEventListener('click', ()=>{
     })
 })
 
-socket.on('welcome', (data)=>{
-    console.log(data)
-})
-
-socket.on('joinMessage', (joinMessage)=>{
-    console.log(joinMessage)
-})
-
-socket.on('leftMessage', (leftMessage=>{
-    console.log(leftMessage)
-}))
-
-socket.on('chat',(message)=>{
+socket.on('message',(message)=>{
     console.log(message)
     const html = Mustache.render(messageTemplate, {
-        message
+        "message": message.text
     })
     messages.insertAdjacentHTML('beforeend', html)
 })

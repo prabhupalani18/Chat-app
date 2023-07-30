@@ -3,6 +3,7 @@ const path = require("path")
 const http = require("http")
 const socketio = require("socket.io")
 const Filter = require("bad-words")
+const { generateMessage } = require('./utils/messages')
 
 const app = express()
 const server = http.createServer(app)
@@ -15,21 +16,21 @@ app.use(express.static(publicDirectoryPath))
 
 io.on("connection", (socket)=>{
 
-    socket.emit('welcome', 'Welcome to my space!')
+    socket.emit('message', generateMessage('Welcome to my space!'))
 
-    socket.broadcast.emit('joinMessage', 'New person joined in chat')
+    socket.broadcast.emit('message', generateMessage('New person joined in chat'))
 
     socket.on('sendMessage', (message, callback)=>{
         const filter = new Filter()
         if(filter.isProfane(message)){
             return callback("Profanity is not allowed")
         }
-        io.emit('chat', message)
+        io.emit('message', generateMessage(message))
         callback()
     })
 
     socket.on('disconnect', ()=>{
-        io.emit('leftMessage','A user has left the chat')
+        io.emit('message', generateMessage('A user has left the chat'))
     })
 
     socket.on('sendLocation', (location, callback)=>{
