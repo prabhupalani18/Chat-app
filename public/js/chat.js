@@ -1,13 +1,24 @@
 const socket = io()
 
-const formEvent = document.querySelector('#message-form')
+const messageForm = document.querySelector('#message-form')
+const inputTextSpace = document.querySelector('#message')
+const sendMessageButton = document.querySelector('#sendMessage')
+const locationButton = document.querySelector('#send-location')
+const messages = document.querySelector('#messages')
 
-const location_buttion = document.querySelector('#send-location')
+// Templates
+const messageTemplate = document.querySelector('#message-template').innerHTML
+const locationTemplate = document.querySelector('#location-template').innerHTML
 
-formEvent.addEventListener('submit',(e)=>{
+messageForm.addEventListener('submit',(e)=>{
     e.preventDefault()
+    sendMessageButton.setAttribute('disabled', 'disabled')
     const message = e.target.elements.message.value
     socket.emit('sendMessage', message, (error)=>{
+        sendMessageButton.removeAttribute('disabled')
+        inputTextSpace.value = ''
+        inputTextSpace.focus()
+
         if(error)
         {
             return console.log(error)
@@ -16,20 +27,21 @@ formEvent.addEventListener('submit',(e)=>{
     })
 })
 
-location_buttion.addEventListener('click', ()=>{
+locationButton.addEventListener('click', ()=>{
     if(!navigator.geolocation)
     {
         return alert('Geolocation is not supported by your browser')
     }
 
+    locationButton.setAttribute('disabled', 'disabled')
     navigator.geolocation.getCurrentPosition((position)=>{
-        console.log(position.coords)
         const { latitude, longitude } = position.coords
         const location = {
             "latitude": latitude,
             "longitude": longitude
         }
         socket.emit('sendLocation', location, ()=>{
+            locationButton.removeAttribute('disabled')
             console.log("Location shared")
         })
     })
@@ -49,8 +61,16 @@ socket.on('leftMessage', (leftMessage=>{
 
 socket.on('chat',(message)=>{
     console.log(message)
+    const html = Mustache.render(messageTemplate, {
+        message
+    })
+    messages.insertAdjacentHTML('beforeend', html)
 })
 
-socket.on('locationMessage', (message, ca)=>{
-    console.log(message)
+socket.on('locationMessage', (url, ca)=>{
+    console.log(url)
+    const html = Mustache.render(locationTemplate, {
+        url
+    })
+    messages.insertAdjacentHTML('beforeend', html)
 })
