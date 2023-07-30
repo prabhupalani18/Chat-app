@@ -7,7 +7,13 @@ const location_buttion = document.querySelector('#send-location')
 formEvent.addEventListener('submit',(e)=>{
     e.preventDefault()
     const message = e.target.elements.message.value
-    socket.emit('sendMessage', message)
+    socket.emit('sendMessage', message, (error)=>{
+        if(error)
+        {
+            return console.log(error)
+        }
+        console.log("Message sent")
+    })
 })
 
 location_buttion.addEventListener('click', ()=>{
@@ -23,7 +29,9 @@ location_buttion.addEventListener('click', ()=>{
             "latitude": latitude,
             "longitude": longitude
         }
-        socket.emit('sendLocation', location)
+        socket.emit('sendLocation', location, ()=>{
+            console.log("Location shared")
+        })
     })
 })
 
@@ -39,6 +47,10 @@ socket.on('leftMessage', (leftMessage=>{
     console.log(leftMessage)
 }))
 
-socket.on('locationMessage', (message)=>{
+socket.on('chat',(message)=>{
+    console.log(message)
+})
+
+socket.on('locationMessage', (message, ca)=>{
     console.log(message)
 })
