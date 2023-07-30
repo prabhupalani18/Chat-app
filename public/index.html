@@ -4,11 +4,16 @@
         <title></title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="css/style.css" rel="stylesheet">
     </head>
     <body>
         <h1>Welcome to chat application</h1>
-    </body>
-</html>
+        <form id="message-form">
+            <input type="text" placeholder="type message" id="message">
+            <button type="submit" id="sendMessage">send</button>
+        </form> <br>
+        <button id="send-location">Send location</button>
 
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/js/chat.js"></script>
+    </body>
 </html>
